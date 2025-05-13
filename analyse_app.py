@@ -5,7 +5,7 @@ from PIL import Image
 from tensorflow.keras.models import load_model
 
 # Modell laden
-modell = load_model("../PapierDataset/papier_klassifizierer.h5")
+modell = load_model("papier_klassifizierer.h5")
 
 # Bildgröße
 BILD_GROESSE = (180, 180)
