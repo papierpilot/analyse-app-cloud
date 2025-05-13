@@ -3,24 +3,24 @@ import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
 
-# 🧠 Modell laden
-modell = load_model("papier_klassifizierer.keras")
+# Modell laden
+modell = load_model("papier_klassifizierer.h5")
 
-# 📐 Bildgröße für Modell
+# Bildgröße
 BILD_GROESSE = (180, 180)
 
-# ⚙️ Streamlit Konfiguration
+# Streamlit Konfiguration
 st.set_page_config(page_title="📱 Mobile Papier-Analyse", layout="centered")
 st.title("📦📸 Papieranalyse mobil")
 st.write("Mache 5 Bilder der Papierladung und erhalte eine Empfehlung.")
 
-# 🔧 Bild vorbereiten
+# Bild vorbereiten
 def vorbereiten(img):
     img = img.resize(BILD_GROESSE)
     img_array = np.expand_dims(np.array(img) / 255.0, axis=0)
     return img_array
 
-# 🔮 Vorhersage-Funktion
+# Vorhersage
 def vorhersage(img):
     array = vorbereiten(img)
     prediction = modell.predict(array)[0]
@@ -28,14 +28,14 @@ def vorhersage(img):
     index = np.argmax(prediction)
     return klassen[index], prediction[index] * 100
 
-# 📥 Upload-Bereich
+# Upload
 uploaded = st.file_uploader(
     "📷 Bitte genau 5 Bilder aufnehmen oder hochladen",
     type=["jpg", "jpeg", "png"],
     accept_multiple_files=True
 )
 
-# 🔍 Analyse
+# Analyse
 if uploaded and len(uploaded) == 5:
     st.success("5 Bilder erhalten – starte Analyse...")
 
@@ -47,15 +47,15 @@ if uploaded and len(uploaded) == 5:
         klasse, _ = vorhersage(img)
         ergebnisse[klasse] += 1
 
-    # 📊 Ergebnisanzeige mit Prozent
+    # Anzeige mit Prozentangaben
     st.markdown("### 📊 Analyse-Ergebnisse:")
     for klasse in ergebnisse:
         anzahl = ergebnisse[klasse]
         prozent = round((anzahl / total) * 100, 1)
         st.write(f"🔹 {klasse.capitalize()}: **{anzahl} von {total} Bildern** ({prozent} %)")
 
-    # ✅ Empfehlung
-    if ergebnisse["karton"] >= 3:  # also 3 oder mehr von 5 → >= 60%
+    # Entscheidungsempfehlung
+    if ergebnisse["karton"] >= 3:
         st.success("✅ Empfehlung: **Verpressen**")
     else:
         st.warning("⚠️ Empfehlung: **Sortieren**")
