@@ -1,8 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models
-import os
 
-# 📁 Ordner mit vorbereiteten Bildern
+# 📁 Pfad zum vorbereiteten Datensatz
 datensatz_pfad = "vorbereitete_bilder"
 
 # 📦 Datensatz laden
@@ -24,11 +23,11 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
     batch_size=8
 )
 
-# 📋 Klassen extrahieren
+# 🔍 Klassen extrahieren
 klassen_namen = train_ds.class_names
 print("🔍 Gefundene Klassen:", klassen_namen)
 
-# 🚀 Performance verbessern
+# 🚀 Pipeline optimieren
 AUTOTUNE = tf.data.AUTOTUNE
 train_ds = train_ds.cache().shuffle(100).prefetch(buffer_size=AUTOTUNE)
 val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
@@ -47,12 +46,12 @@ modell = models.Sequential([
 ])
 
 modell.compile(optimizer='adam',
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy'])
+               loss='sparse_categorical_crossentropy',
+               metrics=['accuracy'])
 
-# 🎓 Training
+# 🎓 Training starten
 modell.fit(train_ds, validation_data=val_ds, epochs=10)
 
-# 💾 Speichern
-modell.save("PapierDataset/papier_klassifizierer.h5")
-print("✅ Modell wurde gespeichert unter: PapierDataset/papier_klassifizierer.h5")
+# 💾 Modell speichern
+modell.save("papier_klassifizierer.keras")
+print("✅ Modell wurde gespeichert unter: papier_klassifizierer.keras")
