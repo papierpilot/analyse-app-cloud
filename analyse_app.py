@@ -20,13 +20,13 @@ def vorbereiten(img):
     img_array = np.expand_dims(np.array(img) / 255.0, axis=0)
     return img_array
 
-# Vorhersage
+# Vorhersage-Funktion
 def vorhersage(img):
     array = vorbereiten(img)
     prediction = modell.predict(array)[0]
-    klassen = ["gemischt", "karton", "zeitung"]
+    klassen = ["gemischt", "karton", "zeitung"]  # feste Reihenfolge
     index = np.argmax(prediction)
-    return klassen[index], prediction[index] * 100
+    return klassen[index]
 
 # Upload
 uploaded = st.file_uploader(
@@ -40,21 +40,18 @@ if uploaded and len(uploaded) == 5:
     st.success("5 Bilder erhalten – starte Analyse...")
 
     ergebnisse = {"karton": 0, "zeitung": 0, "gemischt": 0}
-    total = len(uploaded)
 
     for bild in uploaded:
         img = Image.open(bild).convert("RGB")
-        klasse, _ = vorhersage(img)
+        klasse = vorhersage(img)
         ergebnisse[klasse] += 1
 
-    # Anzeige mit Prozentangaben
+    # Ausgabe
     st.markdown("### 📊 Analyse-Ergebnisse:")
     for klasse in ergebnisse:
-        anzahl = ergebnisse[klasse]
-        prozent = round((anzahl / total) * 100, 1)
-        st.write(f"🔹 {klasse.capitalize()}: **{anzahl} von {total} Bildern** ({prozent} %)")
+        st.write(f"🔹 {klasse.capitalize()}: **{ergebnisse[klasse]} von 5 Bildern**")
 
-    # Entscheidungsempfehlung
+    # Entscheidung
     if ergebnisse["karton"] >= 3:
         st.success("✅ Empfehlung: **Verpressen**")
     else:
